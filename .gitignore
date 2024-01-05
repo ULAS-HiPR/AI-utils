@@ -162,3 +162,5 @@ cython_debug/
 .DS_Store
 
 nirscene0/
+model.png 
+logs/
