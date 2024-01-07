@@ -164,3 +164,4 @@ cython_debug/
 nirscene0/
 model.png 
 logs/
+training_checkpoints/
