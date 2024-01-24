@@ -19,7 +19,7 @@ class LogManager:
             self.log = logging.getLogger(name if name else __name__)
             self.log.setLevel(logging.DEBUG)
             formatter = colorlog.ColoredFormatter(
-                "%(asctime)s [%(name)s] %(log_color)s%(levelname)s%(reset)s %(message)s",
+                "%(asctime)s [%(name)s] %(log_color)s:: %(levelname)s ::%(reset)s %(message)s",
                 log_colors={
                     "DEBUG": "cyan",
                     "INFO": "green",
