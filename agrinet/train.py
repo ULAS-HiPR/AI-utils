@@ -1,8 +1,18 @@
 import argparse
+import os
+import time
 
 import tensorflow as tf
-from utils.LogManager import LogManager
 from utils.DataLoader import load_image_train, load_image_test
+from utils.LogManager import LogManager
+from utils.Model import (
+    Discriminator,
+    Generator,
+    discriminator_loss,
+    discriminator_optimizer,
+    generator_loss,
+    generator_optimizer,
+)
 
 BUFFER_SIZE = 400
 
@@ -10,7 +20,7 @@ BUFFER_SIZE = 400
 def main(args):
     logger = LogManager.get_logger("AGRINET TRAIN")
 
-    # Gathering training and testing images
+    # Gathering training
     logger.info("Building data pipeline...")
 
     train_dataset = tf.data.Dataset.list_files(args.data_dir + "/train/*." + args.ext)
@@ -21,14 +31,76 @@ def main(args):
     train_dataset = train_dataset.batch(args.batch_size)
     logger.debug("Train dataset contains {} images".format(len(train_dataset)))
 
-    test_dataset = tf.data.Dataset.list_files(args.data_dir + "/test/*." + args.ext)
+    test_dataset = tf.data.Dataset.list_files(args.data_dir + "/train/*." + args.ext)
     test_dataset = test_dataset.map(load_image_test)
     test_dataset = test_dataset.batch(args.batch_size)
     logger.debug("Test dataset contains {} images".format(len(test_dataset)))
 
     logger.info("Building model...")
+    generator = Generator()
+    discriminator = Discriminator()
+
+    @tf.function
+    def train_step(input_image, target, step):
+        with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+            gen_output = generator(input_image, training=True)
+
+            disc_real_output = discriminator([input_image, target], training=True)
+            disc_generated_output = discriminator(
+                [input_image, gen_output], training=True
+            )
+
+            gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(
+                disc_generated_output, gen_output, target
+            )
+            disc_loss = discriminator_loss(disc_real_output, disc_generated_output)
+
+        generator_gradients = gen_tape.gradient(
+            gen_total_loss, generator.trainable_variables
+        )
+        discriminator_gradients = disc_tape.gradient(
+            disc_loss, discriminator.trainable_variables
+        )
+
+        generator_optimizer.apply_gradients(
+            zip(generator_gradients, generator.trainable_variables)
+        )
+        discriminator_optimizer.apply_gradients(
+            zip(discriminator_gradients, discriminator.trainable_variables)
+        )
+
+        # logger.debug(
+        #     f"gen_total_loss: {gen_total_loss} | gen_gan_loss: {gen_gan_loss} | gen_l1_loss: {gen_l1_loss} | disc_loss: {disc_loss}"
+        # )
+
+    checkpoint_dir = "./training_checkpoints"
+    checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
+    checkpoint = tf.train.Checkpoint(
+        generator_optimizer=generator_optimizer,
+        discriminator_optimizer=discriminator_optimizer,
+        generator=generator,
+        discriminator=discriminator,
+    )
 
     logger.info("Starting training...")
+
+    def fit(train_ds, test_ds, steps):
+        start = time.time()
+
+        for step, (input_image, target) in train_ds.repeat().take(steps).enumerate():
+            if (step + 1) % 10 == 0:
+                logger.debug(
+                    "Epoch {} - Elapsed {:.2f}s".format(step + 1, time.time() - start)
+                )
+
+            train_step(input_image, target, step)
+
+            # Checkpoint frequency
+            if (step + 1) % 50 == 0:
+                checkpoint.save(file_prefix=checkpoint_prefix)
+                logger.debug("Checkpoint saved at {}".format(checkpoint_prefix))
+
+    fit(train_dataset, test_dataset, steps=100)
 
 
 def parse_args():
