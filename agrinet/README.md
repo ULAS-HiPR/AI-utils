@@ -7,7 +7,9 @@ A RGB to NIR image translation model for agricultural aerial evaluation on veget
 nirscene0 - 477 images
 multiple scenes ranging in conditions, this was used as it is a good balance for generalisation.
 
-## Training
+## Tools
+
+### Training
 
 CLI tool available via `python train.py --help` for more information.
 
@@ -28,3 +30,9 @@ optional arguments:
   --ext EXT             Extension of the images
   --seed SEED           Random seed for training
 ```
+
+#### Unit tests
+  
+  ```bash
+  agrinet $ python -m unittest discover -q tests
+  ```
