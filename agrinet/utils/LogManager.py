@@ -33,6 +33,7 @@ class LogManager:
         else:
             LogManager.__instance = self
             self.log = logging.getLogger(name if name else __name__)
+
             self.log.setLevel(logging.DEBUG)
 
             # Only set up handlers if they are not already configured
