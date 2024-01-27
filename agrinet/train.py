@@ -116,7 +116,19 @@ def main(args):
     filetime = time.strftime("%d%m%y_%H%M")
     tf.saved_model.save(generator, "./generator_{}".format(filetime))
     tf.saved_model.save(discriminator, "./discriminator_{}".format(filetime))
-    logger.info("Model(s) saved")
+
+    try:
+        generator.save_weights("./generator_weights_{}".format(filetime))
+        discriminator.save_weights("./discriminator_weights_{}".format(filetime))
+
+    except Exception as e:
+        logger.error("Error while saving weights : {}".format(e))
+
+    logger.debug(
+        "Model and weights saved at {} and {} respectively".format(
+            "./generator_{} ".format(filetime), " ./discriminator_{}".format(filetime)
+        )
+    )
 
 
 def parse_args():
