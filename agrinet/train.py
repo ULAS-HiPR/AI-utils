@@ -79,7 +79,7 @@ def main(args):
         tf.summary.scalar("gen_l1_loss", txt_gen_l1_loss, step=step)
         tf.summary.scalar("disc_loss", txt_disc_loss, step=step)
 
-    checkpoint_dir = "./training_checkpoints"
+    checkpoint_dir = f"./{args.name}/training_checkpoints"
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
     checkpoint = tf.train.Checkpoint(
         generator_optimizer=generator_optimizer,
@@ -115,18 +115,23 @@ def main(args):
     # day-month-year-hour-minute
     filetime = time.strftime("%d%m%y_%H%M")
 
-    tf.saved_model.save(generator, "./generator_{}".format(filetime))
-    tf.saved_model.save(discriminator, "./discriminator_{}".format(filetime))
+    tf.saved_model.save(generator, "./{}/generator_{}".format(args.name, filetime))
+    tf.saved_model.save(
+        discriminator, "./{}/discriminator_{}".format(args.name, filetime)
+    )
 
     logger.debug(
         "Model and weights saved at {} and {} respectively".format(
-            "./generator_{} ".format(filetime), " ./discriminator_{}".format(filetime)
+            "./{}/generator_{} ".format(args.name, filetime),
+            " ./{}/discriminator_{}".format(args.name, filetime),
         )
     )
 
     try:
-        generator.save_weights("./generator_weights_{}".format(filetime))
-        discriminator.save_weights("./discriminator_weights_{}".format(filetime))
+        generator.save_weights("./{}/generator_weights_{}".format(args.name, filetime))
+        discriminator.save_weights(
+            "./{}/discriminator_weights_{}".format(args.name, filetime)
+        )
 
     except Exception as e:
         logger.error("Error while saving weights : {}".format(e))
@@ -134,6 +139,12 @@ def main(args):
 
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--name",
+        type=str,
+        help="Name of experiment, used for logging and saving checkpoints and weights",
+        required=True,
+    )
     parser.add_argument(
         "--data_dir",
         type=str,
