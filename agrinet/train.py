@@ -118,18 +118,18 @@ def main(args):
     tf.saved_model.save(generator, "./generator_{}".format(filetime))
     tf.saved_model.save(discriminator, "./discriminator_{}".format(filetime))
 
+    logger.debug(
+        "Model and weights saved at {} and {} respectively".format(
+            "./generator_{} ".format(filetime), " ./discriminator_{}".format(filetime)
+        )
+    )
+
     try:
         generator.save_weights("./generator_weights_{}".format(filetime))
         discriminator.save_weights("./discriminator_weights_{}".format(filetime))
 
     except Exception as e:
         logger.error("Error while saving weights : {}".format(e))
-
-    logger.debug(
-        "Model and weights saved at {} and {} respectively".format(
-            "./generator_{} ".format(filetime), " ./discriminator_{}".format(filetime)
-        )
-    )
 
 
 def parse_args():
@@ -138,7 +138,7 @@ def parse_args():
         "--data_dir",
         type=str,
         default="data",
-        help="Path to data directory",
+        help="Path to data directory. must contain train and test folders with images",
         required=True,
     )
     parser.add_argument(
