@@ -69,9 +69,15 @@ def main(args):
             zip(discriminator_gradients, discriminator.trainable_variables)
         )
 
-        # logger.debug(
-        #     f"gen_total_loss: {gen_total_loss} | gen_gan_loss: {gen_gan_loss} | gen_l1_loss: {gen_l1_loss} | disc_loss: {disc_loss}"
-        # )
+        txt_gen_total_loss = tf.convert_to_tensor(gen_total_loss)
+        txt_gen_gan_loss = tf.convert_to_tensor(gen_gan_loss)
+        txt_gen_l1_loss = tf.convert_to_tensor(gen_l1_loss)
+        txt_disc_loss = tf.convert_to_tensor(disc_loss)
+
+        tf.summary.scalar("gen_total_loss", txt_gen_total_loss, step=step)
+        tf.summary.scalar("gen_gan_loss", txt_gen_gan_loss, step=step)
+        tf.summary.scalar("gen_l1_loss", txt_gen_l1_loss, step=step)
+        tf.summary.scalar("disc_loss", txt_disc_loss, step=step)
 
     checkpoint_dir = "./training_checkpoints"
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
@@ -88,19 +94,29 @@ def main(args):
         start = time.time()
 
         for step, (input_image, target) in train_ds.repeat().take(steps).enumerate():
-            if (step + 1) % 10 == 0:
-                logger.debug(
-                    "Epoch {} - Elapsed {:.2f}s".format(step + 1, time.time() - start)
-                )
-
             train_step(input_image, target, step)
 
-            # Checkpoint frequency
+            # Checkpoint frequency is 50 steps
             if (step + 1) % 50 == 0:
                 checkpoint.save(file_prefix=checkpoint_prefix)
                 logger.debug("Checkpoint saved at {}".format(checkpoint_prefix))
 
-    fit(train_dataset, test_dataset, steps=100)
+            # Logging frequency is 10 steps
+            if (step + 1) % 10 == 0:
+                logger.debug(
+                    "Epoch {} completed, {:.2f}s elapsed.".format(
+                        step + 1, time.time() - start
+                    )
+                )
+
+    fit(train_dataset, test_dataset, steps=args.epochs)
+    logger.info("Training finished")
+
+    # day-month-year-hour-minute
+    filetime = time.strftime("%d%m%y_%H%M")
+    tf.saved_model.save(generator, "./generator_{}".format(filetime))
+    tf.saved_model.save(discriminator, "./discriminator_{}".format(filetime))
+    logger.info("Model(s) saved")
 
 
 def parse_args():
