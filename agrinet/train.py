@@ -3,7 +3,7 @@ import os
 import time
 
 import tensorflow as tf
-from utils.DataLoader import load_image_train, load_image_test
+from utils.DataLoader import load_image_test, load_image_train
 from utils.LogManager import LogManager
 from utils.Model import (
     Discriminator,
