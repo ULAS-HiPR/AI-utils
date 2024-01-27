@@ -114,6 +114,7 @@ def main(args):
 
     # day-month-year-hour-minute
     filetime = time.strftime("%d%m%y_%H%M")
+
     tf.saved_model.save(generator, "./generator_{}".format(filetime))
     tf.saved_model.save(discriminator, "./discriminator_{}".format(filetime))
 
