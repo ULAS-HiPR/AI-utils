@@ -31,7 +31,19 @@ optional arguments:
   --seed SEED           Random seed for training
 ```
 
-#### Unit tests
+### Tensorboard
+
+For monitoring loss during training and viewing input and output space
+
+```bash
+agrinet $ tensorboard --logdir={NAME}/logs
+```
+
+**Example view**
+
+![TB example view](../assets/image.png)
+
+### Unit tests
   
   ```bash
   agrinet $ python -m unittest discover -q tests

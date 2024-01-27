@@ -3,6 +3,7 @@ import os
 import time
 
 import tensorflow as tf
+from tensorflow.summary import create_file_writer
 from utils.DataLoader import load_image_test, load_image_train
 from utils.LogManager import LogManager
 from utils.Model import (
@@ -19,6 +20,10 @@ BUFFER_SIZE = 400
 
 def main(args):
     logger = LogManager.get_logger("AGRINET TRAIN")
+
+    # training logs
+    log_dir = os.path.join("./", args.name, "logs")
+    summary_writer = create_file_writer(log_dir)
 
     # Gathering training
     logger.info("Building data pipeline...")
@@ -74,10 +79,15 @@ def main(args):
         txt_gen_l1_loss = tf.convert_to_tensor(gen_l1_loss)
         txt_disc_loss = tf.convert_to_tensor(disc_loss)
 
-        tf.summary.scalar("gen_total_loss", txt_gen_total_loss, step=step)
-        tf.summary.scalar("gen_gan_loss", txt_gen_gan_loss, step=step)
-        tf.summary.scalar("gen_l1_loss", txt_gen_l1_loss, step=step)
-        tf.summary.scalar("disc_loss", txt_disc_loss, step=step)
+        with summary_writer.as_default():
+            tf.summary.scalar("gen_total_loss", txt_gen_total_loss, step=step)
+            tf.summary.scalar("gen_gan_loss", txt_gen_gan_loss, step=step)
+            tf.summary.scalar("gen_l1_loss", txt_gen_l1_loss, step=step)
+            tf.summary.scalar("disc_loss", txt_disc_loss, step=step)
+
+            tf.summary.image("input_image", input_image, step=step)
+            tf.summary.image("target", target, step=step)
+            tf.summary.image("gen_output", gen_output, step=step)
 
     checkpoint_dir = f"./{args.name}/training_checkpoints"
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
