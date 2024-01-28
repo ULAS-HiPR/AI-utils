@@ -18,9 +18,9 @@ jobs:
     - name: Set up Miniconda
       uses: conda-incubator/setup-miniconda@v2
       with:
-        environment-file: environment.yml
+        environment-file: ../../environment.yml
     - name: Activate conda environment
       run: conda activate ai-utils
     - name: Run unit tests
       run: |
-        python -m unittest discover -q agrinet/tests
+        python -m unittest discover -q ../../agrinet/tests
