@@ -17,6 +17,11 @@ conda env create -f environment.yml # if you don't have the conda env created
 conda activate ai-utils
 ```
 
+```bash
+# if you need to use pip
+pip install -r requirements.txt
+```
+
 _Note: Conda is used because it let's use pip packages also and we can control the python version. It is a bit more powerful and is easier to work with in the long run. Install either [anaconda](https://www.anaconda.com/download/) or [miniconda](https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html) to use it._
 
 ## Directory Structure
