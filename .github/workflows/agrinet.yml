@@ -14,7 +14,7 @@ on:
 jobs:
   runtests:
     name: Build and test
-    runs-on: $
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
