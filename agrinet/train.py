@@ -56,7 +56,7 @@ def main(args):
             )
 
             gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(
-                disc_generated_output, gen_output, target
+                disc_generated_output, gen_output, target, args.lr
             )
             disc_loss = discriminator_loss(disc_real_output, disc_generated_output)
 
@@ -177,7 +177,7 @@ def parse_args():
         required=True,
     )
     parser.add_argument(
-        "--lr", type=float, default=1e-3, help="Learning rate for training"
+        "--lr", type=float, default=100, help="Learning rate for training"
     )
     parser.add_argument(
         "--ext", type=str, default="jpg", help="Extension of the images"
