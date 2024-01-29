@@ -20,9 +20,9 @@ usage: train.py [-h] --name NAME --data_dir DATA_DIR --batch_size BATCH_SIZE
 optional arguments:
   -h, --help            show this help message and exit
   --name NAME           Name of experiment, used for logging and saving
-                        checkpoints and weights
+                        checkpoints and weights in one directory
   --data_dir DATA_DIR   Path to data directory. must contain train and test
-                        folders with images
+                        folders with images (see --ext)
   --batch_size BATCH_SIZE
                         Batch size for training
   --epochs EPOCHS       Number of epochs to train
