@@ -13,7 +13,7 @@ on:
 
 jobs:
   runtests:
-    name: conda 
+    name: pip
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -25,22 +25,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          auto-update-conda: true
-          miniforge-variant: Mambaforge
-          channels: conda-forge
           python-version: 3.8
-          activate-environment: ai-utils
-          environment-file: environment.yml
-          use-mamba: true
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt 
       - name: Run tests
         run: python -m unittest discover -q agrinet/tests
-
-
-    
-
-
-
-
