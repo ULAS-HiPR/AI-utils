@@ -13,7 +13,7 @@ on:
 
 jobs:
   runtests:
-    name: Build and test
+    name: miniconda
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -21,7 +21,7 @@ jobs:
         os: ["ubuntu-latest"]
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -l {0} 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -29,9 +29,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: 'latest'
-          channels: conda-forge
           mamba-version: "*"
-          channel-priority: true
           auto-update-conda: false
           auto-activate-base: false
           environment-file: environment.yml
