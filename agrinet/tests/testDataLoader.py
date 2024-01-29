@@ -1,5 +1,11 @@
-import unittest
+import sys
+import os
 
+# fixes "ModuleNotFoundError: No module named 'utils'"
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# flake8: noqa
+import unittest
 import tensorflow as tf
 from utils.DataLoader import load_image_test, load_image_train, resize
 
@@ -15,7 +21,7 @@ class TestImageDataFunctions(unittest.TestCase):
 
     def test_load_image_train(self):
         # Condition: input_image.shape != real_image.shape from the train dataset
-        image_file = "../assets/green-field.jpg"
+        image_file = "assets/green-field.jpg"
         input_image, real_image = load_image_train(image_file)
 
         self.assertIsInstance(input_image, tf.Tensor)
@@ -25,7 +31,7 @@ class TestImageDataFunctions(unittest.TestCase):
 
     def test_load_image_test(self):
         # Condition: input_image.shape == real_image.shape from the test dataset
-        image_file = "../assets/green-field.jpg"
+        image_file = "assets/green-field.jpg"
 
         input_image, real_image = load_image_test(image_file)
 

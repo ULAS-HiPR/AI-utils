@@ -1,7 +1,13 @@
+import sys
+import os
+
+# fixes "ModuleNotFoundError: No module named 'utils'"
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# flake8: noqa
 import unittest
 from io import StringIO
 from unittest.mock import patch
-
 from utils.LogManager import LogManager
 
 
