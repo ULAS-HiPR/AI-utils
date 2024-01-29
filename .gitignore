@@ -173,3 +173,5 @@ generator_*/
 discriminator_weights_*
 generator_weights_*
 checkpoint
+*.jpg
+*.png
