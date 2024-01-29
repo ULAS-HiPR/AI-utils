@@ -22,7 +22,7 @@ grpcio==1.60.0
 h5py==3.10.0
 idna==3.6
 ipykernel==6.29.0
-ipython==8.20.0
+ipython==8.1.1
 jedi==0.19.1
 jupyter_client==8.6.0
 jupyter_core==5.7.1
