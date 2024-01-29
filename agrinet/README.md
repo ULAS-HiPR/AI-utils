@@ -1,5 +1,7 @@
 # AgriNet
 
+[![AgriNet CI](https://github.com/ULAS-HiPR/AI-utils/actions/workflows/agrinet.yml/badge.svg)](https://github.com/ULAS-HiPR/AI-utils/actions/workflows/agrinet.yml)
+
 A RGB to NIR image translation model for agricultural aerial evaluation on vegetation and moisture data.
 
 ## Datasets

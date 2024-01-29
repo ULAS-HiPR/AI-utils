@@ -1,5 +1,7 @@
 # AI-utils
 
+[![AgriNet CI](https://github.com/ULAS-HiPR/AI-utils/actions/workflows/agrinet.yml/badge.svg)](https://github.com/ULAS-HiPR/AI-utils/actions/workflows/agrinet.yml)
+
 Central repository for all AI/ML scripts, notebooks, and experiments.
 
 ## Getting Started
