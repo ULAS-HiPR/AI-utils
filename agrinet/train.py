@@ -3,7 +3,8 @@ import os
 import time
 
 import tensorflow as tf
-from utils.DataLoader import load_image_train, load_image_test
+from tensorflow.summary import create_file_writer
+from utils.DataLoader import load_image_test, load_image_train
 from utils.LogManager import LogManager
 from utils.Model import (
     Discriminator,
@@ -19,6 +20,10 @@ BUFFER_SIZE = 400
 
 def main(args):
     logger = LogManager.get_logger("AGRINET TRAIN")
+
+    # training logs
+    log_dir = os.path.join("./", args.name, "logs")
+    summary_writer = create_file_writer(log_dir)
 
     # Gathering training
     logger.info("Building data pipeline...")
@@ -51,7 +56,7 @@ def main(args):
             )
 
             gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(
-                disc_generated_output, gen_output, target
+                disc_generated_output, gen_output, target, args.lr
             )
             disc_loss = discriminator_loss(disc_real_output, disc_generated_output)
 
@@ -74,12 +79,17 @@ def main(args):
         txt_gen_l1_loss = tf.convert_to_tensor(gen_l1_loss)
         txt_disc_loss = tf.convert_to_tensor(disc_loss)
 
-        tf.summary.scalar("gen_total_loss", txt_gen_total_loss, step=step)
-        tf.summary.scalar("gen_gan_loss", txt_gen_gan_loss, step=step)
-        tf.summary.scalar("gen_l1_loss", txt_gen_l1_loss, step=step)
-        tf.summary.scalar("disc_loss", txt_disc_loss, step=step)
+        with summary_writer.as_default():
+            tf.summary.scalar("gen_total_loss", txt_gen_total_loss, step=step)
+            tf.summary.scalar("gen_gan_loss", txt_gen_gan_loss, step=step)
+            tf.summary.scalar("gen_l1_loss", txt_gen_l1_loss, step=step)
+            tf.summary.scalar("disc_loss", txt_disc_loss, step=step)
 
-    checkpoint_dir = "./training_checkpoints"
+            tf.summary.image("input_image", input_image, step=step)
+            tf.summary.image("target", target, step=step)
+            tf.summary.image("gen_output", gen_output, step=step)
+
+    checkpoint_dir = f"./{args.name}/training_checkpoints"
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt")
     checkpoint = tf.train.Checkpoint(
         generator_optimizer=generator_optimizer,
@@ -114,30 +124,42 @@ def main(args):
 
     # day-month-year-hour-minute
     filetime = time.strftime("%d%m%y_%H%M")
-    tf.saved_model.save(generator, "./generator_{}".format(filetime))
-    tf.saved_model.save(discriminator, "./discriminator_{}".format(filetime))
 
-    try:
-        generator.save_weights("./generator_weights_{}".format(filetime))
-        discriminator.save_weights("./discriminator_weights_{}".format(filetime))
-
-    except Exception as e:
-        logger.error("Error while saving weights : {}".format(e))
+    tf.saved_model.save(generator, "./{}/generator_{}".format(args.name, filetime))
+    tf.saved_model.save(
+        discriminator, "./{}/discriminator_{}".format(args.name, filetime)
+    )
 
     logger.debug(
         "Model and weights saved at {} and {} respectively".format(
-            "./generator_{} ".format(filetime), " ./discriminator_{}".format(filetime)
+            "./{}/generator_{} ".format(args.name, filetime),
+            " ./{}/discriminator_{}".format(args.name, filetime),
         )
     )
+
+    try:
+        generator.save_weights("./{}/generator_weights_{}".format(args.name, filetime))
+        discriminator.save_weights(
+            "./{}/discriminator_weights_{}".format(args.name, filetime)
+        )
+
+    except Exception as e:
+        logger.error("Error while saving weights : {}".format(e))
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "--name",
+        type=str,
+        help="Name of experiment, used for logging and saving checkpoints and weights",
+        required=True,
+    )
+    parser.add_argument(
         "--data_dir",
         type=str,
         default="data",
-        help="Path to data directory",
+        help="Path to data directory. must contain train and test folders with images",
         required=True,
     )
     parser.add_argument(
@@ -155,7 +177,7 @@ def parse_args():
         required=True,
     )
     parser.add_argument(
-        "--lr", type=float, default=1e-3, help="Learning rate for training"
+        "--lr", type=float, default=100, help="Learning rate for training"
     )
     parser.add_argument(
         "--ext", type=str, default="jpg", help="Extension of the images"
