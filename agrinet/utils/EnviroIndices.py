@@ -4,12 +4,18 @@ from typing import Tuple
 
 def get_ndvi(inp: np.ndarray, re: np.ndarray) -> np.ndarray:
     # NDVI = (NIR - Red) / (NIR + Red)
-    return (re[:, :, 0] - inp[:, :, 2]) / (re[:, :, 0] + inp[:, :, 2])
+    denominator = np.where(
+        re[:, :, 0] + inp[:, :, 2] != 0, re[:, :, 0] + inp[:, :, 2], 1e-10
+    )
+    return (re[:, :, 0] - inp[:, :, 2]) / denominator
 
 
 def get_ndwi(inp: np.ndarray, re: np.ndarray) -> np.ndarray:
     # NDWI = (Green - NIR) / (Green + NIR)
-    return (inp[:, :, 1] - re[:, :, 2]) / (inp[:, :, 1] + re[:, :, 2])
+    denominator = np.where(
+        inp[:, :, 1] + re[:, :, 2] != 0, inp[:, :, 1] + re[:, :, 2], 1e-10
+    )
+    return (inp[:, :, 1] - re[:, :, 2]) / denominator
 
 
 def threshold_ndvi(ndvi: np.ndarray) -> np.ndarray:
