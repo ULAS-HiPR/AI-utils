@@ -111,11 +111,11 @@ def main(args):
             epoch_start = time.time()
             train_step(input_image, target, step)
 
-            if (step + 1) % 50 == 0:  # Checkpoint frequency is 50 steps
+            if (step + 1) % 50 == 0 and step != 0:  # Checkpoint frequency is 50 steps
                 checkpoint.save(file_prefix=checkpoint_prefix)
                 logger.debug("Checkpoint saved at {}".format(checkpoint_prefix))
 
-            if step % 10 == 0:  # Logging frequency is 10 steps (epochs)
+            if step % 10 == 0 and step != 0:  # Logging frequency is 10 steps (epochs)
                 current_time = time.time()
                 logger.debug(
                     "Epoch {} completed - {:.2f}s elapsed - {:.2f}s total.".format(
@@ -127,9 +127,9 @@ def main(args):
     logger.info("Training finished")
 
     try:
-        generator.save_weights(f"{args.exp}/generator_weights")
-        discriminator.save_weights(f"{args.exp}/discriminator_weights")
-        logger.info("Weights saved at {}".format(args.exp))
+        generator.save_weights(f"{args.name}/generator_weights")
+        discriminator.save_weights(f"{args.name}/discriminator_weights")
+        logger.info("Weights saved at {}".format(args.name))
     except Exception as e:
         logger.error("Error while saving weights: {}".format(e))
 
