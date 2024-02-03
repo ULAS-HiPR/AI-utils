@@ -111,17 +111,17 @@ def main(args):
             epoch_start = time.time()
             train_step(input_image, target, step)
 
-            if (step + 1) % 50 == 0 and step != 0:  # Checkpoint frequency is 50 steps
-                checkpoint.save(file_prefix=checkpoint_prefix)
-                logger.debug("Checkpoint saved at {}".format(checkpoint_prefix))
-
             if step % 10 == 0 and step != 0:  # Logging frequency is 10 steps (epochs)
                 current_time = time.time()
                 logger.debug(
-                    "Epoch {} completed - {:.2f}s elapsed - {:.2f}s total.".format(
+                    "Epoch {} - {:.2f}s elapsed - {:.2f}s total.".format(
                         step, current_time - epoch_start, current_time - start
                     )
                 )
+
+            if (step + 1) % 50 == 0 and step != 0:  # Checkpoint frequency is 50 steps
+                checkpoint.save(file_prefix=checkpoint_prefix)
+                logger.debug("Checkpoint saved at {}".format(checkpoint_prefix))
 
     fit(train_dataset, test_dataset, steps=args.epochs)
     logger.info("Training finished")
