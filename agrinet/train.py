@@ -127,8 +127,10 @@ def main(args):
     logger.info("Training finished")
 
     try:
-        generator.save_weights(f"{args.name}/generator_weights")
-        discriminator.save_weights(f"{args.name}/discriminator_weights")
+        generator.save_weights(f"{args.name}/generator_weights", save_format="h5")
+        discriminator.save_weights(
+            f"{args.name}/discriminator_weights", save_format="h5"
+        )
         logger.info("Weights saved at {}".format(args.name))
     except Exception as e:
         logger.error("Error while saving weights: {}".format(e))
