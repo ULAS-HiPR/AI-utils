@@ -175,3 +175,9 @@ generator_weights_*
 checkpoint
 *.jpg
 *.png
+
+# model files
+*.data
+*.index
+*.data-*-of-*
+*.index-*-of-*
