@@ -34,12 +34,12 @@ def main(args):
     )
     train_dataset = train_dataset.shuffle(BUFFER_SIZE)
     train_dataset = train_dataset.batch(args.batch_size)
-    logger.debug("Train dataset contains {} images".format(len(train_dataset)))
+    logger.debug("Train dataset contains {} images".format(len(train_dataset) * args.batch_size))
 
     test_dataset = tf.data.Dataset.list_files(args.data_dir + "/train/*." + args.ext)
     test_dataset = test_dataset.map(load_image_test)
     test_dataset = test_dataset.batch(args.batch_size)
-    logger.debug("Test dataset contains {} images".format(len(test_dataset)))
+    logger.debug("Test dataset contains {} images".format(len(test_dataset) * args.batch_size))
 
     logger.info("Building model...")
     generator = Generator()
@@ -165,7 +165,6 @@ def parse_args():
     parser.add_argument(
         "--batch_size",
         type=int,
-        default=32,
         help="Batch size for training",
         required=True,
     )
