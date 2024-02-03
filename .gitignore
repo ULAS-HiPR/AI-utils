@@ -177,7 +177,5 @@ checkpoint
 *.png
 
 # model files
-*.data
-*.index
-*.data-*-of-*
-*.index-*-of-*
+generator_weights
+discriminator_weights
