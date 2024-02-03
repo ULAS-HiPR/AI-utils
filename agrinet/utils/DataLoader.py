@@ -22,6 +22,22 @@ def load(image_file):
     return real_image, input_image
 
 
+def load_single(image_file):
+    image = tf.io.read_file(image_file)
+    image = tf.io.decode_jpeg(image)
+
+    image = tf.cast(image, tf.float32)
+    image = tf.image.resize(image, [256, 256])
+
+    return image
+
+
+def save_single(image, path):
+    image = tf.image.resize(image, [256, 256])
+    image = tf.image.convert_image_dtype(image, tf.uint8)
+    image = tf.image.encode_jpeg(image)
+
+
 def resize(input_image, real_image, height, width):
     input_image = tf.image.resize(
         input_image, [height, width], method=tf.image.ResizeMethod.NEAREST_NEIGHBOR
