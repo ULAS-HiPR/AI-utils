@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 # flake8: noqa
 import unittest
 import tensorflow as tf
-from utils.DataLoader import load_image_test, load_image_train, resize
+from utils.DataLoader import load_image_test, load_image_train, resize, save_result
 
 
 class TestImageDataFunctions(unittest.TestCase):
@@ -51,6 +51,29 @@ class TestImageDataFunctions(unittest.TestCase):
         self.assertIsInstance(resized_real, tf.Tensor)
         self.assertEqual(resized_input.shape, resized_real.shape)
         self.assertEqual(resized_input.shape, (128, 128, 3))
+
+    def save_result_rgb(self):
+        input_img = tf.constant([[[1, 2, 3], [4, 5, 6]]], dtype=tf.float32)
+        output_img = tf.constant([[[7, 8, 9], [10, 11, 12]]], dtype=tf.float32)
+        path = "assets/result.jpg"
+
+        try:
+            res = save_result(input_img, output_img, path)
+            assert res.shape == (256, 512, 3)
+        except:
+            assert False, "save_result() raised an exception!"
+
+    def save_result_grayscale(self):
+        input_img = tf.constant([[1, 2], [3, 4]], dtype=tf.float32)
+        output_img = tf.constant([[5, 6], [7, 8]], dtype=tf.float32)
+        path = "assets/result.jpg"
+
+        try:
+            res = save_result(input_img, output_img, path)
+            assert res.shape == (256, 512, 3)
+
+        except:
+            assert False, "save_result() raised an exception!"
 
 
 if __name__ == "__main__":

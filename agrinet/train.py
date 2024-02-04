@@ -34,12 +34,16 @@ def main(args):
     )
     train_dataset = train_dataset.shuffle(BUFFER_SIZE)
     train_dataset = train_dataset.batch(args.batch_size)
-    logger.debug("Train dataset contains {} images".format(len(train_dataset)))
+    logger.debug(
+        "Train dataset contains {} images".format(len(train_dataset) * args.batch_size)
+    )
 
     test_dataset = tf.data.Dataset.list_files(args.data_dir + "/train/*." + args.ext)
     test_dataset = test_dataset.map(load_image_test)
     test_dataset = test_dataset.batch(args.batch_size)
-    logger.debug("Test dataset contains {} images".format(len(test_dataset)))
+    logger.debug(
+        "Test dataset contains {} images".format(len(test_dataset) * args.batch_size)
+    )
 
     logger.info("Building model...")
     generator = Generator()
@@ -104,47 +108,32 @@ def main(args):
         start = time.time()
 
         for step, (input_image, target) in train_ds.repeat().take(steps).enumerate():
+            epoch_start = time.time()
             train_step(input_image, target, step)
 
-            # Checkpoint frequency is 50 steps
-            if (step + 1) % 50 == 0:
-                checkpoint.save(file_prefix=checkpoint_prefix)
-                logger.debug("Checkpoint saved at {}".format(checkpoint_prefix))
-
-            # Logging frequency is 10 steps
-            if (step + 1) % 10 == 0:
+            if step % 10 == 0 and step != 0:  # Logging frequency is 10 steps (epochs)
+                current_time = time.time()
                 logger.debug(
-                    "Epoch {} completed, {:.2f}s elapsed.".format(
-                        step + 1, time.time() - start
+                    "Epoch {} - {:.2f}s elapsed - {:.2f}s total.".format(
+                        step, current_time - epoch_start, current_time - start
                     )
                 )
+
+            if (step + 1) % 50 == 0 and step != 0:  # Checkpoint frequency is 50 steps
+                checkpoint.save(file_prefix=checkpoint_prefix)
+                logger.debug("Checkpoint saved at {}".format(checkpoint_prefix))
 
     fit(train_dataset, test_dataset, steps=args.epochs)
     logger.info("Training finished")
 
-    # day-month-year-hour-minute
-    filetime = time.strftime("%d%m%y_%H%M")
-
-    tf.saved_model.save(generator, "./{}/generator_{}".format(args.name, filetime))
-    tf.saved_model.save(
-        discriminator, "./{}/discriminator_{}".format(args.name, filetime)
-    )
-
-    logger.debug(
-        "Model and weights saved at {} and {} respectively".format(
-            "./{}/generator_{} ".format(args.name, filetime),
-            " ./{}/discriminator_{}".format(args.name, filetime),
-        )
-    )
-
     try:
-        generator.save_weights("./{}/generator_weights_{}".format(args.name, filetime))
+        generator.save_weights(f"{args.name}/generator_weights", save_format="h5")
         discriminator.save_weights(
-            "./{}/discriminator_weights_{}".format(args.name, filetime)
+            f"{args.name}/discriminator_weights", save_format="h5"
         )
-
+        logger.info("Weights saved at {}".format(args.name))
     except Exception as e:
-        logger.error("Error while saving weights : {}".format(e))
+        logger.error("Error while saving weights: {}".format(e))
 
 
 def parse_args():
@@ -165,7 +154,6 @@ def parse_args():
     parser.add_argument(
         "--batch_size",
         type=int,
-        default=32,
         help="Batch size for training",
         required=True,
     )
