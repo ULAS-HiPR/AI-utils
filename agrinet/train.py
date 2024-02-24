@@ -4,7 +4,7 @@ import time
 
 import tensorflow as tf
 from tensorflow.summary import create_file_writer
-from utils.DataLoader import load_image_test, load_image_train
+from utils.DataLoader import load_image_train
 from utils.LogManager import LogManager
 from utils.Model import (
     Discriminator,
@@ -36,13 +36,6 @@ def main(args):
     train_dataset = train_dataset.batch(args.batch_size)
     logger.debug(
         "Train dataset contains {} images".format(len(train_dataset) * args.batch_size)
-    )
-
-    test_dataset = tf.data.Dataset.list_files(args.data_dir + "/train/*." + args.ext)
-    test_dataset = test_dataset.map(load_image_test)
-    test_dataset = test_dataset.batch(args.batch_size)
-    logger.debug(
-        "Test dataset contains {} images".format(len(test_dataset) * args.batch_size)
     )
 
     logger.info("Building model...")
@@ -104,7 +97,7 @@ def main(args):
 
     logger.info("Starting training...")
 
-    def fit(train_ds, test_ds, steps):
+    def fit(train_ds, steps):
         start = time.time()
 
         for step, (input_image, target) in train_ds.repeat().take(steps).enumerate():
@@ -123,7 +116,7 @@ def main(args):
                 checkpoint.save(file_prefix=checkpoint_prefix)
                 logger.debug("Checkpoint saved at {}".format(checkpoint_prefix))
 
-    fit(train_dataset, test_dataset, steps=args.epochs)
+    fit(train_dataset, steps=args.epochs)
     logger.info("Training finished")
 
     try:
