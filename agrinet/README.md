@@ -45,6 +45,23 @@ agrinet $ tensorboard --logdir={NAME}/logs
 
 ![TB example view](../assets/image.png)
 
+### Model evaluation
+
+CLI tool available via `python test.py --help` for more information.
+
+```man
+usage: test.py [-h] --exp EXP [--data_dir DATA_DIR] [--ext EXT] [--batch_size BATCH_SIZE] [--save SAVE]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --exp EXP             Experiment name
+  --data_dir DATA_DIR   Path to the data
+  --ext EXT             Extension of the images
+  --batch_size BATCH_SIZE
+                        Batch size
+  --save SAVE           Save results to file
+```
+
 ### Unit tests
   
   ```bash
