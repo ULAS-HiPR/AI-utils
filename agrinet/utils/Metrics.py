@@ -23,15 +23,15 @@ class CGANMetrics:
 
     def psnr(self, x, y):
         """Compute the Peak Signal to Noise Ratio between two images"""
-        x = x.numpy()
-        y = y.numpy()
+        x = x.numpy() if hasattr(x, "numpy") else x
+        y = y.numpy() if hasattr(y, "numpy") else y
         mse = np.mean((x - y) ** 2)
         return 20 * np.log10(255) - 10 * np.log10(mse)
 
     def mmd(self, x, y):
         """Compute the Maximum Mean Discrepancy between two sets of samples"""
-        x = x.numpy()
-        y = y.numpy()
+        x = x.numpy() if hasattr(x, "numpy") else x
+        y = y.numpy() if hasattr(y, "numpy") else y
         x_flat = np.reshape(x, (x.shape[0], -1))
         y_flat = np.reshape(y, (y.shape[0], -1))
 
