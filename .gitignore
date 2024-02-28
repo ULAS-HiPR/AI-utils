@@ -164,4 +164,18 @@ cython_debug/
 nirscene0/
 model.png 
 logs/
+
+# Checkpoint files and weights from training
 training_checkpoints/
+*.pb
+discriminator_*/
+generator_*/
+discriminator_weights_*
+generator_weights_*
+checkpoint
+*.jpg
+*.png
+
+# model files
+generator_weights
+discriminator_weights
