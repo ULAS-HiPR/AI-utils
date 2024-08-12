@@ -16,4 +16,5 @@ class AerialDataset(Dataset):
         image = np.load(f'{self.path}/{self.ids[idx]}__IMAGE__.npy')
         image = np.reshape(image,(3, self.IMAGE_HEIGHT, self.IMAGE_WIDTH))
         label = np.load(f'{self.path}/{self.ids[idx]}__LABEL__.npy')
+        label = np.reshape(label, (7, self.IMAGE_HEIGHT, self.IMAGE_WIDTH))
         return {'image': torch.from_numpy(image), 'mask': torch.from_numpy(label)}
