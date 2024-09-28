@@ -1,3 +1,6 @@
 datasets/
 experiments/wandb
 weights/
+runs/
+*.pt
+*.yaml

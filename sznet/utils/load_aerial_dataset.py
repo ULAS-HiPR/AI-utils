@@ -16,7 +16,17 @@ valid/
       /labels
 '''
 
-            
+
+def get_ids(path: str):
+    image_files = os.listdir(f'{path}/images')
+    image_file_ids = [x.split('.tif')[0] for x in image_files]
+    
+    label_files = os.listdir(f'{path}/images')
+    label_file_ids = [x.split('.tif')[0] for x in label_files]
+    
+    intersection = list(set(image_file_ids).intersection(set(label_file_ids)))
+    return intersection
+
 
 def load_dataset(path: str, output_path: str, IMAGE_HEIGHT, IMAGE_WIDTH, NUM_OF_CLASSES, generate_data=True, train_or_val="train"):
     label_files = os.listdir(f'{path}/{train_or_val}/labels')

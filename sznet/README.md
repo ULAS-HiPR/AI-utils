@@ -26,3 +26,28 @@ Design and train a neural network that can identify safe landing zones for a hig
 ## Tech Decisions
 ### ML Framework
 We have chosen PyTorch as our ML framework. This is due to its widespread adoption in the industry and frequent use in sample implementations of model architectures. 
+
+
+## Dataset
+We have chosen the OpenEarthMap dataset. [Add more info]
+
+The original dataset has 8 classes: Bareland, Rangeland, Developed Space, Road, Tree, Water, Agricultural Land, Building. 
+
+For our purposes, we really only need to distinguish between 3 superclasses: Safe & Retrievable (Bareland, Rangeland, Road, Agricultural Land), Safe & Unretrievable (Tree, Water) and Unsafe (Developed Space, Building). To improve model performance and efficiency we merged the existing classes into our superclasses to create our dataset.
+
+1, 2, 4, 7 = 1
+5, 6 = 2
+3, 8 = 3
+
+```python
+import cv2
+import numpy as np
+import Image
+def merge_classes(image_path: str):
+    image = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
+    np.where(image == 1 or image == 2 or image == 4 or image == 7, 1, 0)
+    np.where(image == 5 or image == 6, 2, 0)
+    np.where(image == 3 or image == 8, 3, 0)
+    im = Image.fromarray(image)
+    im.save(image_path)
+```
