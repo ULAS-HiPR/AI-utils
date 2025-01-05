@@ -33,11 +33,12 @@ We have chosen the OpenEarthMap dataset. [Add more info]
 
 The original dataset has 8 classes: Bareland, Rangeland, Developed Space, Road, Tree, Water, Agricultural Land, Building. 
 
-For our purposes, we really only need to distinguish between 3 superclasses: Safe & Retrievable (Bareland, Rangeland, Road, Agricultural Land), Safe & Unretrievable (Tree, Water) and Unsafe (Developed Space, Building). To improve model performance and efficiency we merged the existing classes into our superclasses to create our dataset.
+<!-- For our purposes, we really only need to distinguish between 3 superclasses: Safe & Retrievable (Bareland, Rangeland, Agricultural Land), Safe & Unretrievable (Tree, Water) and Unsafe (Developed Space, Road, Building). To improve model performance and efficiency we merged the existing classes into our superclasses to create our dataset.  -->
 
-1, 2, 4, 7 = 1
-5, 6 = 2
-3, 8 = 3
+For our purposes, we really only need to distinguish between 3 superclasses: Safe (Bareland, Rangeland, Agricultural Land, Tree, Water) and Unsafe (Developed Space, Road, Building). To improve model performance and efficiency we merged the existing classes into our superclasses to create our dataset. 
+
+1, 2, 7, 5, 6 = 1
+3, 4, 8 = 2
 
 ```python
 import cv2

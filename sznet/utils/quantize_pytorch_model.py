@@ -4,12 +4,6 @@ import ai_edge_torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from torch._export import capture_pre_autograd_graph
-from torch.ao.quantization.quantize_pt2e import prepare_pt2e, convert_pt2e
-from ai_edge_torch.quantize.pt2e_quantizer import get_symmetric_quantization_config
-from ai_edge_torch.quantize.pt2e_quantizer import PT2EQuantizer
-from ai_edge_torch.quantize.quant_config import QuantConfig
-
 """ Parts of the U-Net model """
 
 class DoubleConv(nn.Module):
@@ -131,11 +125,20 @@ class UNet(nn.Module):
         self.up3 = torch.utils.checkpoint(self.up3)
         self.up4 = torch.utils.checkpoint(self.up4)
         self.outc = torch.utils.checkpoint(self.outc)
-        
-model = UNet(n_channels=3, n_classes=3, bilinear=True)
-model.load_state_dict(torch.load('/Users/conor/Development/AeroSoc/Payload/AI-utils/sznet/weights/vanilla_unet/28_09__MULTICLASS_OUTPUT__unet_vanilla_checkpoint_epoch1.pth'))
 
-sample_inputs = (torch.randn(1, 3, 500, 500),)
+# create a model instance
+model_fp32 = UNet(n_channels=3, n_classes=3, bilinear=True)
+model_fp32.load_state_dict(torch.load('/Users/conor/Development/AeroSoc/Payload/AI-utils/sznet/weights/vanilla_unet/28_09__MULTICLASS_OUTPUT__unet_vanilla_checkpoint_epoch1.pth'))
 
-edge_model = ai_edge_torch.convert(model.eval(), sample_inputs)
-edge_model.export("sznet_multiclass_v0.tflite")
+# create a quantized model instance
+model_int8 = torch.ao.quantization.quantize_dynamic(
+    model_fp32,  # the original model
+    {torch.nn.Linear, torch.nn.Conv2d, torch.nn.BatchNorm2d, torch.nn.ReLU, torch.nn.MaxPool2d, torch.nn.Upsample, torch.nn.ConvTranspose2d},  # a set of layers to dynamically quantize
+    dtype=torch.qint8)  # the target dtype for quantized weights
+
+# run the model
+input_fp32 = torch.randn(1, 500, 500, 3)
+res = model_int8(input_fp32)
+
+
+breakpoint()

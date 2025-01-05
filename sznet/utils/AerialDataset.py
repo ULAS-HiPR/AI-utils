@@ -23,7 +23,6 @@ class AerialDataset(Dataset):
         # image = np.reshape(image, (3, 500, 500))
         image = np.transpose(image, (2,0,1))
         label = cv2.imread(f'{self.path}/labels/{self.ids[idx]}.tif', cv2.IMREAD_UNCHANGED)
-        label = np.reshape(label, (500, 500))
         # label = np.where((label == 1) | (label == 2), 255, 0)
         multi_channel_label = np.zeros((len(self.class_dict), 500, 500))
         for i in range(0, len(self.class_dict)):
