@@ -5,10 +5,11 @@ This is a project being worked on by the ULAS HiPR's Payload team.
 Design and train a neural network that can identify safe landing zones for a high-powered rocket.
 
 ## Steps
-1. Segment an image captured by an onboard camera into different classes (e.g. forest, buildings, field, water, residential, etc.)
-2. Rank the segments by safety and rocket retrievability (e.g. field > forest > water > buildings > residential)
-3. Choose the optimal landing zone
-4. Calculate approximate coordinates of chosen landing zone using altitude, camera FOV and potentially IMU data.
+1. Segment an image captured by an onboard camera into different classes
+    - Either by land use type (forest, buildings, field, residential, etc.) or just a binary mask of SAFE/UNSAFE
+2. If segmented by land use type, rank the segments by safety and rocket retrievability (e.g. field > forest > water > buildings > residential)
+4. Identify the optimal landing zone based on this ranking
+5. (Stretch goal) Calculate the approximate coordinates of the chosen landing zone using altitude, camera FOV and potentially IMU data
 
 ## Goals
 1. Model is small and efficient enough to run on our chosen hardware (Raspberry Pi 5 4GB and Coral TPU (4 TOPS @ int8))
@@ -27,18 +28,17 @@ Design and train a neural network that can identify safe landing zones for a hig
 ### ML Framework
 We have chosen PyTorch as our ML framework. This is due to its widespread adoption in the industry and frequent use in sample implementations of model architectures. 
 
-
+<!--
 ## Dataset
-We have chosen the OpenEarthMap dataset. [Add more info]
+We have chosen the OpenEarthMap dataset. 
 
 The original dataset has 8 classes: Bareland, Rangeland, Developed Space, Road, Tree, Water, Agricultural Land, Building. 
-
-<!-- For our purposes, we really only need to distinguish between 3 superclasses: Safe & Retrievable (Bareland, Rangeland, Agricultural Land), Safe & Unretrievable (Tree, Water) and Unsafe (Developed Space, Road, Building). To improve model performance and efficiency we merged the existing classes into our superclasses to create our dataset.  -->
 
 For our purposes, we really only need to distinguish between 3 superclasses: Safe (Bareland, Rangeland, Agricultural Land, Tree, Water) and Unsafe (Developed Space, Road, Building). To improve model performance and efficiency we merged the existing classes into our superclasses to create our dataset. 
 
 1, 2, 7, 5, 6 = 1
-3, 4, 8 = 2
+3, 4, 8 = 2 
+-->
 
 ```python
 import cv2
